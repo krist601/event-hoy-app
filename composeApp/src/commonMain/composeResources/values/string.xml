@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">EventHoy</string>
+    <string name="retry">Reintentar</string>
+    <string name="no_internet">Sin conexión a internet. Por favor, inténtalo de nuevo</string>
+    <string name="server_error">Error del servidor. Por favor, inténtalo más tarde</string>
+    <string name="something_went_wrong">Algo salió mal. Por favor, inténtalo de nuevo</string>
+    <string name="read_more_at">Leer artículo completo en %1$s</string>
+    <string name="back_content_description">Atrás</string>
+    <string name="share_content_description">Compartir</string>
+</resources>
