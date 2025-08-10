@@ -1,47 +1,35 @@
 package org.jkc.event.tracker.data.entity.response
 
 import kotlinx.serialization.Serializable
+import org.jkc.event.tracker.data.util.parseToLocalDateTime
 import org.jkc.event.tracker.domain.entity.EventEntity
 
 @Serializable
 data class EventListResponse(
-    val events: List<Event> = emptyList(),
-    val totalItems: Int = 0,
-    val totalPages: Int = 0,
-    val currentPage: Int = 0
+    val data: List<Event> = emptyList(),
+    val pagination: Pagination
 ) {
-
     @Serializable
     data class Event(
         val id: Int,
-        val title: String,
-        val description: String,
-        val startDate: String,
-        val endDate: String?,
-        val image: String,
-        val externalUrl: String?,
-        val source: String?,
-        val priceFrom: String?,
-        val featured: Boolean,
-        val ticketSaleStart: String?,
-        val ticketSaleEnd: String?,
-        val status: String,
-        val categoryId: Int,
-        val venueId: Int,
-        val createdAt: String,
-        val updatedAt: String,
-        val category: Category,
-        val venue: Venue
+        val title: String? = null,
+        val description: String? = null,
+        val status: String? = null,
+        val ticketPrice: String? = null,
+        val imageUrl: String? = null,
+        val createdAt: String? = null,
+        val updatedAt: String? = null,
+        val venue: Venue? = null,
+        val category: Category? = null,
+        val availableDates: List<AvailableDates>? = null,
+        val totalDates: Int? = null,
+        val nextDate: String? = null,
+        val recurrenceInfo: RecurrenceInfo? = null
     ) {
         @Serializable
         data class Category(
             val id: Int,
-            val name: String,
-            val icon: String,
-            val position: Int,
-            val status: String,
-            val createdAt: String,
-            val updatedAt: String
+            val name: String
         )
 
         @Serializable
@@ -49,28 +37,47 @@ data class EventListResponse(
             val id: Int,
             val name: String,
             val address: String,
-            val latitude: Double,
-            val longitude: Double,
-            val type: String,
-            val websiteUrl: String,
-            val image: String,
-            val status: String,
-            val cityId: Int,
-            val createdAt: String,
-            val updatedAt: String,
             val city: City
         ) {
             @Serializable
             data class City(
                 val id: Int,
                 val name: String,
-                val image: String,
-                val countryId: Int,
-                val createdAt: String,
-                val updatedAt: String
-            )
+                val country: Country
+            ) {
+                @Serializable
+                data class Country(
+                    val id: Int,
+                    val name: String
+                )
+            }
         }
     }
+
+    @Serializable
+    data class Pagination(
+        val page: Int,
+        val limit: Int,
+        val total: Int,
+        val totalPages: Int,
+        val hasNext: Boolean,
+        val hasPrev: Boolean
+    )
+
+    @Serializable
+    data class AvailableDates(
+        val id: Int,
+        val startDate: String,
+        val endDate: String,
+    )
+
+    @Serializable
+    data class RecurrenceInfo(
+        val recurrenceType: String,
+        val interval: Int,
+        val startDate: String,
+        val endDate: String,
+    )
 }
 
 fun EventListResponse.Event.toEntity(): EventEntity {
@@ -78,20 +85,50 @@ fun EventListResponse.Event.toEntity(): EventEntity {
         id = id,
         title = title,
         description = description,
-        startDate = startDate,
-        endDate = endDate,
-        image = image,
-        externalUrl = externalUrl,
-        source = source,
-        priceFrom = priceFrom,
-        featured = featured,
-        ticketSaleStart = ticketSaleStart,
-        ticketSaleEnd = ticketSaleEnd,
         status = status,
-        categoryId = categoryId,
-        venueId = venueId,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        ticketPrice = ticketPrice,
+        imageUrl = imageUrl,
+        createdAt = parseToLocalDateTime(createdAt.orEmpty()),
+        updatedAt = parseToLocalDateTime(updatedAt.orEmpty()),
+        venue = venue?.let{
+            EventEntity.VenueEntity(
+                id = it.id,
+                name = it.name,
+                address = it.address,
+                city = EventEntity.VenueEntity.CityEntity(
+                    id = it.city.id,
+                    name = it.city.name,
+                    country = EventEntity.VenueEntity.CityEntity.CountryEntity(
+                        id = it.city.country.id,
+                        name = it.city.country.name
+                    )
+                )
+            )
+        },
+        category = category?.let {
+            EventEntity.CategoryEntity(
+                id = category.id,
+                name = category.name
+            )
+        },
+        availableDates = availableDates?.let {
+            availableDates.map {
+                EventEntity.AvailableDatesEntity(
+                    id = it.id,
+                    startDate = it.startDate,
+                    endDate = it.endDate,
+                )
+            } },
+        totalDates = totalDates,
+        nextDate = nextDate,
+        recurrenceInfo = recurrenceInfo?.let {
+            EventEntity.RecurrenceInfoEntity(
+                recurrenceType = recurrenceInfo.recurrenceType,
+                interval = recurrenceInfo.interval,
+                startDate = recurrenceInfo.startDate,
+                endDate = recurrenceInfo.endDate,
+            )
+        }
     )
 }
 

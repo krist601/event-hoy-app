@@ -28,8 +28,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -51,6 +53,7 @@ import eventtracker.composeapp.generated.resources.Res
 import eventtracker.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.presentation.ui.common.CalendarComponent
 import org.jkc.event.tracker.presentation.ui.common.CategoryList
 import org.jkc.event.tracker.presentation.ui.common.CustomTopAppBar
 import org.jkc.event.tracker.presentation.ui.common.ErrorContent
@@ -59,6 +62,7 @@ import org.jkc.event.tracker.presentation.ui.common.SearchBarComponent
 import org.jkc.event.tracker.presentation.ui.eventlist.EventCard
 import org.jkc.event.tracker.presentation.util.uistates.HomeUIState
 import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.datetime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +75,11 @@ fun HomeRoute(
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showSheet by remember { mutableStateOf(false) }
+    var selectedDate by remember {
+        mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault()))
+    }
 
     Scaffold(
         modifier = Modifier.background(Color.White),
@@ -78,7 +87,8 @@ fun HomeRoute(
             CustomTopAppBar(
                 stringResource(Res.string.app_name),
                 onBackClick = null,
-                onNotificationsClick = {}
+                onNotificationsClick = null,
+                onCalendarClick = { showSheet = true }
             )
         }
     ) { innerPadding ->
@@ -127,6 +137,21 @@ fun HomeRoute(
                     )
                 }
             }
+        }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState
+        ) {
+            CalendarComponent(
+                selectedDate = selectedDate,
+                onDateSelected = { date ->
+                    selectedDate = date
+                    showSheet = false
+                }
+            )
         }
     }
 }
@@ -197,7 +222,7 @@ fun LateralEventCard(
     ) {
         Column {
             AsyncImage(
-                model = event.image,
+                model = event.imageUrl,
                 contentDescription = event.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -208,7 +233,7 @@ fun LateralEventCard(
             Spacer(modifier = Modifier.height(8.dp))
             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Text(
-                    text = event.title,
+                    text = event.title.orEmpty(),
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -223,14 +248,14 @@ fun LateralEventCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = event.description,
+                        text = event.description.orEmpty(),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = event.startDate,
+                    text = "",//event.availableDates.orEmpty().first().startDate,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

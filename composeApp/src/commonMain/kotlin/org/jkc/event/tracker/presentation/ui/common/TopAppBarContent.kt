@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +28,8 @@ import androidx.compose.ui.unit.dp
 fun CustomTopAppBar(
     title: String,
     onBackClick: (() -> Unit)?,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: (() -> Unit)?,
+    onCalendarClick: (() -> Unit)?
 ) {
     TopAppBar(
         title = {
@@ -42,24 +45,34 @@ fun CustomTopAppBar(
             onBackClick?.let {
                 IconButton(onClick = it) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        modifier = Modifier.size(32.dp).padding(4.dp)
+                        modifier = Modifier
+                            .size(32.dp)
+                            .padding(4.dp)
                     )
                 }
-            } ?: run{
+            } ?: run {
                 Spacer(modifier = Modifier.size(32.dp))
             }
         },
         actions = {
-            /*Box {
+            onCalendarClick?.let {
+                IconButton(onClick = it) {
+                    Icon(
+                        imageVector = Icons.Default.CalendarToday,
+                        contentDescription = "Calendar"
+                    )
+                }
+            }
+            onNotificationsClick?.let {
                 IconButton(onClick = onNotificationsClick) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notifications"
                     )
                 }
-            }*/
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White,

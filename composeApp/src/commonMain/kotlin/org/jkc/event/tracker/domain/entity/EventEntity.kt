@@ -1,21 +1,56 @@
 package org.jkc.event.tracker.domain.entity
 
+import kotlinx.datetime.LocalDateTime
+
 data class EventEntity(
     val id: Int,
-    val title: String,
-    val description: String,
-    val startDate: String,
-    val endDate: String?,
-    val image: String,
-    val externalUrl: String?,
-    val source: String?,
-    val priceFrom: String?,
-    val featured: Boolean,
-    val ticketSaleStart: String?,
-    val ticketSaleEnd: String?,
-    val status: String,
-    val categoryId: Int,
-    val venueId: Int,
-    val createdAt: String,
-    val updatedAt: String,
-)
+    val title: String? = null,
+    val description: String? = null,
+    val status: String? = null,
+    val ticketPrice: String? = null,
+    val imageUrl: String? = null,
+    val createdAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null,
+    val venue: VenueEntity? = null,
+    val category: CategoryEntity? = null,
+    val availableDates: List<AvailableDatesEntity>? = null,
+    val totalDates: Int? = null,
+    val nextDate: String? = null,
+    val recurrenceInfo: RecurrenceInfoEntity? = null
+) {
+    data class CategoryEntity(
+        val id: Int,
+        val name: String
+    )
+
+    data class VenueEntity(
+        val id: Int,
+        val name: String,
+        val address: String,
+        val city: CityEntity
+    ) {
+        data class CityEntity(
+            val id: Int,
+            val name: String,
+            val country: CountryEntity
+        ) {
+            data class CountryEntity(
+                val id: Int,
+                val name: String
+            )
+        }
+    }
+
+    data class AvailableDatesEntity(
+        val id: Int,
+        val startDate: String,
+        val endDate: String,
+    )
+
+    data class RecurrenceInfoEntity(
+        val recurrenceType: String,
+        val interval: Int,
+        val startDate: String,
+        val endDate: String,
+    )
+}

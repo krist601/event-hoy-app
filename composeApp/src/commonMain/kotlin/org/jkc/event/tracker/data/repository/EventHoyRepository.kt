@@ -22,8 +22,8 @@ class EventHoyRepository(
                 page = page
             )
             return Pair(
-                data.events.toEntity(),
-                data.totalPages != data.currentPage
+                data.data.toEntity(),
+                data.pagination.hasNext
             )
         } catch (e: Exception) {
             try {

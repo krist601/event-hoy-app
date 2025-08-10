@@ -34,6 +34,7 @@ import coil3.compose.AsyncImage
 import eventtracker.composeapp.generated.resources.Res
 import eventtracker.composeapp.generated.resources.back_content_description
 import eventtracker.composeapp.generated.resources.share_content_description
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jkc.event.tracker.domain.entity.EventEntity
@@ -96,7 +97,7 @@ fun EventDetailScreen(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
-                model = data.event.image,
+                model = data.event.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -133,7 +134,7 @@ fun EventDetailScreen(
         ) {
 
             Text(
-                text = data.event.title,
+                text = data.event.title.orEmpty(),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Ellipsis,
@@ -144,7 +145,7 @@ fun EventDetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = data.event.status,
+                    text = data.event.status.orEmpty(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -178,7 +179,7 @@ fun EventDetailScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = data.event.description,
+                text = data.event.description.orEmpty(),
                 style = MaterialTheme.typography.bodyMedium,
                 overflow = TextOverflow.Ellipsis
             )
@@ -195,22 +196,50 @@ fun EventDetailScreen(
 private val data = EventUIState(
     event = EventEntity(
         id = 1,
-        title = "Festival de Jazz de Santiago",
-        description = "Un encuentro musical con los mejores exponentes del jazz nacional e internacional.",
-        startDate = "2025-08-05T19:00:00Z",
-        endDate = "2025-08-05T23:30:00Z",
-        image = "https://example.com/images/jazzfest.jpg",
-        externalUrl = "https://jazzfest.cl",
-        source = "Municipalidad de Santiago",
-        priceFrom = "10000",
-        featured = true,
-        ticketSaleStart = "2025-07-01T00:00:00Z",
-        ticketSaleEnd = "2025-08-04T23:59:59Z",
-        status = "confirmed",
-        categoryId = 3,
-        venueId = 12,
-        createdAt = "2025-06-01T10:00:00Z",
-        updatedAt = "2025-07-10T15:45:00Z"
+        title = "Concierto de Rock Sinfónico",
+        description = "Una experiencia única que mezcla el poder del rock con la majestuosidad de una orquesta sinfónica.",
+        status = "active",
+        ticketPrice = "25.000 CLP",
+        imageUrl = "https://example.com/images/rock-sinfonico.jpg",
+        createdAt = LocalDateTime.parse("2025-08-01T12:00:00"),
+        updatedAt = LocalDateTime.parse("2025-08-05T14:30:00"),
+        venue = EventEntity.VenueEntity(
+            id = 101,
+            name = "Teatro Municipal de Santiago",
+            address = "Agustinas 794",
+            city = EventEntity.VenueEntity.CityEntity(
+                id = 10,
+                name = "Santiago",
+                country = EventEntity.VenueEntity.CityEntity.CountryEntity(
+                    id = 1,
+                    name = "Chile"
+                )
+            )
+        ),
+        category = EventEntity.CategoryEntity(
+            id = 5,
+            name = "Música"
+        ),
+        availableDates = listOf(
+            EventEntity.AvailableDatesEntity(
+                id = 1001,
+                startDate = "2025-08-10T20:00:00",
+                endDate = "2025-08-10T22:30:00"
+            ),
+            EventEntity.AvailableDatesEntity(
+                id = 1002,
+                startDate = "2025-08-11T20:00:00",
+                endDate = "2025-08-11T22:30:00"
+            )
+        ),
+        totalDates = 2,
+        nextDate = "2025-08-10T20:00:00",
+        recurrenceInfo = EventEntity.RecurrenceInfoEntity(
+            recurrenceType = "daily",
+            interval = 1,
+            startDate = "2025-08-10T20:00:00",
+            endDate = "2025-08-11T22:30:00"
+        )
     )
 )
 

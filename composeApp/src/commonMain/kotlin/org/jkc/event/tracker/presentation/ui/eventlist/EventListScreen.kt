@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import eventtracker.composeapp.generated.resources.Res
 import eventtracker.composeapp.generated.resources.app_name
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jkc.event.tracker.domain.entity.EventEntity
@@ -79,7 +80,8 @@ fun EventListRoute(
                 onBackClick = {
                     onBackClick()
                 },
-                onNotificationsClick = {}
+                onNotificationsClick = {},
+                onCalendarClick = {}
             )
         }
     ) { innerPadding ->
@@ -191,7 +193,7 @@ fun EventCard(
                 .fillMaxWidth()
         ) {
             AsyncImage(
-                model = event.image,
+                model = event.imageUrl,
                 contentDescription = event.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -203,7 +205,7 @@ fun EventCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = event.title,
+                    text = event.title.orEmpty(),
                     style = MaterialTheme.typography.bodyLarge
                         .copy(
                             fontWeight = FontWeight.SemiBold,
@@ -222,7 +224,7 @@ fun EventCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = event.title,
+                        text = event.title.orEmpty(),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
@@ -237,7 +239,7 @@ fun EventCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = event.startDate+" "+event.endDate,
+                        text = "",//event.availableDates.orEmpty().first().startDate+" "+event.availableDates.orEmpty().first().endDate,
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
@@ -251,60 +253,50 @@ private val data = EventListUIState(
     eventList = listOf(
         EventEntity(
             id = 1,
-            title = "Festival de Jazz de Santiago",
-            description = "Un encuentro musical con los mejores exponentes del jazz nacional e internacional.",
-            startDate = "2025-08-05T19:00:00Z",
-            endDate = "2025-08-05T23:30:00Z",
-            image = "https://example.com/images/jazzfest.jpg",
-            externalUrl = "https://jazzfest.cl",
-            source = "Municipalidad de Santiago",
-            priceFrom = "10000",
-            featured = true,
-            ticketSaleStart = "2025-07-01T00:00:00Z",
-            ticketSaleEnd = "2025-08-04T23:59:59Z",
-            status = "confirmed",
-            categoryId = 3,
-            venueId = 12,
-            createdAt = "2025-06-01T10:00:00Z",
-            updatedAt = "2025-07-10T15:45:00Z"
-        ),
-        EventEntity(
-            id = 2,
-            title = "Exposición de Arte Contemporáneo",
-            description = "Galería abierta con obras de artistas emergentes latinoamericanos.",
-            startDate = "2025-08-15T10:00:00Z",
-            endDate = "2025-08-30T18:00:00Z",
-            image = "https://example.com/images/arte.jpg",
-            externalUrl = null,
-            source = "Museo de Arte Moderno",
-            priceFrom = "0",
-            featured = false,
-            ticketSaleStart = null,
-            ticketSaleEnd = null,
+            title = "Concierto de Rock Sinfónico",
+            description = "Una experiencia única que mezcla el poder del rock con la majestuosidad de una orquesta sinfónica.",
             status = "active",
-            categoryId = 5,
-            venueId = 8,
-            createdAt = "2025-06-10T09:00:00Z",
-            updatedAt = "2025-07-05T12:30:00Z"
-        ),
-        EventEntity(
-            id = 3,
-            title = "Concierto Sinfónico al Aire Libre",
-            description = "La Orquesta Filarmónica interpreta clásicos en el Parque Metropolitano.",
-            startDate = "2025-09-10T20:00:00Z",
-            endDate = null,
-            image = "https://example.com/images/sinfonico.jpg",
-            externalUrl = "https://filarmonica.cl/eventos",
-            source = "Filarmónica de Chile",
-            priceFrom = "5000",
-            featured = true,
-            ticketSaleStart = "2025-08-01T00:00:00Z",
-            ticketSaleEnd = "2025-09-09T23:59:59Z",
-            status = "scheduled",
-            categoryId = 2,
-            venueId = 3,
-            createdAt = "2025-06-15T11:00:00Z",
-            updatedAt = "2025-07-12T16:10:00Z"
+            ticketPrice = "25.000 CLP",
+            imageUrl = "https://example.com/images/rock-sinfonico.jpg",
+            createdAt = LocalDateTime.parse("2025-08-01T12:00:00"),
+            updatedAt = LocalDateTime.parse("2025-08-05T14:30:00"),
+            venue = EventEntity.VenueEntity(
+                id = 101,
+                name = "Teatro Municipal de Santiago",
+                address = "Agustinas 794",
+                city = EventEntity.VenueEntity.CityEntity(
+                    id = 10,
+                    name = "Santiago",
+                    country = EventEntity.VenueEntity.CityEntity.CountryEntity(
+                        id = 1,
+                        name = "Chile"
+                    )
+                )
+            ),
+            category = EventEntity.CategoryEntity(
+                id = 5,
+                name = "Música"
+            ),
+            availableDates = listOf(
+                EventEntity.AvailableDatesEntity(
+                    id = 1001,
+                    startDate = "2025-08-10T20:10:00",
+                    endDate = "2025-08-10T22:30:00"
+                ),
+                EventEntity.AvailableDatesEntity(
+                    id = 1002,
+                    startDate = "2025-08-11T20:00:00",
+                    endDate = "2025-08-11T22:30:00"
+                )
+            ),
+            totalDates = 2,
+            nextDate = "2025-08-10T20:00:00",
+            recurrenceInfo = EventEntity.RecurrenceInfoEntity(
+                recurrenceType = "daily",
+                interval = 1,
+                startDate = "2025-08-10T20:00:00",
+                endDate = "2025-08-11T22:30:00"
+            )
         )
     )
 )

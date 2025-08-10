@@ -57,7 +57,7 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation(libs.sqldelight.native.driver)
-            implementation(libs.kotlin.coroutines.core)
+            //implementation(libs.kotlin.coroutines.core)
         }
         androidMain.dependencies {
             implementation(compose.preview)

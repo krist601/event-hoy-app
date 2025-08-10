@@ -8,7 +8,6 @@ import kotlinx.datetime.toLocalDateTime
 
 @Serializable
 class CategoryListResponse(
-    val success: Boolean,
     val data: List<Category>,
     val pagination: Pagination
 ){
@@ -16,19 +15,23 @@ class CategoryListResponse(
     data class Category(
         val id: Int,
         val name: String,
+        val slug: String,
+        val description: String?,
         val icon: String,
         val position: Int,
-        val status: String,
+        val isActive: Boolean,
         val createdAt: String,
         val updatedAt: String
     )
 
     @Serializable
     data class Pagination(
-        val total: Int,
         val page: Int,
         val limit: Int,
-        val totalPages: Int
+        val total: Int,
+        val totalPages: Int,
+        val hasNext: Boolean,
+        val hasPrev: Boolean
     )
 }
 
@@ -37,9 +40,11 @@ fun List<CategoryListResponse.Category>.toEntity(): List<CategoryEntity> {
         CategoryEntity(
             id = it.id,
             name = it.name,
+            slug = it.slug,
+            description = it.description.orEmpty(),
             icon = it.icon,
             position = it.position,
-            status = it.status,
+            isActive = it.isActive,
             createdAt = Instant.parse(it.createdAt).toLocalDateTime(TimeZone.UTC),
             updatedAt = Instant.parse(it.updatedAt).toLocalDateTime(TimeZone.UTC)
         )
