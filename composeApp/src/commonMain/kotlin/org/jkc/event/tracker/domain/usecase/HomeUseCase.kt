@@ -10,21 +10,25 @@ class HomeUseCase(
     suspend fun getEventList(
         text: String? = null,
         type: String? = null,
-        page: Int? = null
+        page: Int? = null,
+        date: String? = null,
     ): Pair<List<EventEntity>, Boolean> {
         return eventHoyRepository.getEventList(
             text = text,
             type = type,
-            page = page
+            page = page,
+            date = date
         )
     }
     suspend fun getEventListType(
         text: String? = null,
         type: String? = null,
+        date: String? = null,
     ): List<EventEntity> {
         return eventHoyRepository.getEventList(
             text = text,
-            type = type
+            type = type,
+            date = date
         ).first
     }
     suspend fun getCategoryList(): List<CategoryEntity> {

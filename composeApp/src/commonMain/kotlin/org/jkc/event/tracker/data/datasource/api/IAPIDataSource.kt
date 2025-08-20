@@ -8,7 +8,8 @@ interface IAPIDataSource {
     suspend fun getEventList(
         text: String? = null,
         type: String? = null,
-        page: Int? = null
+        page: Int? = null,
+        date: String? = null,
     ): EventListResponse
     suspend fun getEventById(id: Int): EventEntity
     suspend fun getCategoryList(): CategoryListResponse

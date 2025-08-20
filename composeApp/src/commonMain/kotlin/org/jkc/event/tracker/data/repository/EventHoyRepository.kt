@@ -13,13 +13,15 @@ class EventHoyRepository(
     suspend fun getEventList(
         text: String? = null,
         type: String? = null,
-        page: Int? = null
+        page: Int? = null,
+        date: String? = null,
     ): Pair<List<EventEntity>, Boolean> {
         try {
             val data = apiDataSource.getEventList(
                 text = text,
                 type = type,
-                page = page
+                page = page,
+                date = date
             )
             return Pair(
                 data.data.toEntity(),

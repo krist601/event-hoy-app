@@ -148,7 +148,7 @@ fun HomeRoute(
             CalendarComponent(
                 selectedDate = selectedDate,
                 onDateSelected = { date ->
-                    selectedDate = date
+                    viewModel.fetchEventList(date = date)
                     showSheet = false
                 }
             )

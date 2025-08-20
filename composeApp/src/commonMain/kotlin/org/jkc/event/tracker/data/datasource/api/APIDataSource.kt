@@ -29,12 +29,14 @@ class APIDataSource: IAPIDataSource {
     override suspend fun getEventList(
         text: String?,
         type: String?,
-        page: Int?
+        page: Int?,
+        date: String?,
     ): EventListResponse {
         val params = mutableListOf<String>()
 
         text?.let { params += "text=$it" }
         //type?.let { params += "type=$it" }
+        date?.let{ params += "startdate=$it" }
         page?.let { params += "page=$it" }
         params += "limit=10"
 

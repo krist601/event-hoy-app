@@ -6,11 +6,13 @@ import coil3.network.HttpException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.io.IOException
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
 import org.jkc.event.tracker.domain.usecase.HomeUseCase
 import org.jkc.event.tracker.presentation.ui.common.ErrorType
+import org.jkc.event.tracker.presentation.util.extensions.simpleDateFormat
 
 class HomeViewModel(
     private val homeUseCase: HomeUseCase
@@ -55,7 +57,8 @@ class HomeViewModel(
         }
     }
     fun fetchEventList(
-        text: String? = null
+        text: String? = null,
+        date: LocalDate? = null
     ) {
         viewModelScope.launch {
             _state.value = HomeViewState.Success(
@@ -65,7 +68,8 @@ class HomeViewModel(
             try {
                 val events = homeUseCase.getEventList(
                     text = text,
-                    page = page
+                    page = page,
+                    date = date?.simpleDateFormat()
                 )
                 memorySuggestedEventList.addAll(events.first)
                 hasMorePages = events.second
