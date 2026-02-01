@@ -72,6 +72,7 @@ private fun MainNavigationHost() {
             val route = it.toRoute<MainNavigationDestination.EventList>()
             EventListRoute(
                 eventFilter = route.eventFilter,
+                category = route.categoryId,
                 onEventClick = { eventId ->
                     navController.navigate(MainNavigationDestination.EventDetail(eventId))
                 },

@@ -27,14 +27,9 @@ class LocalDataSource: ILocalDataSource {
                 id = 101,
                 name = "Teatro Municipal de Santiago",
                 address = "Agustinas 794",
-                city = EventEntity.VenueEntity.CityEntity(
-                    id = 10,
-                    name = "Santiago",
-                    country = EventEntity.VenueEntity.CityEntity.CountryEntity(
-                        id = 1,
-                        name = "Chile"
-                    )
-                )
+                latitude = -30.01,
+                longitude = -30.01,
+                url = ""
             ),
             category = EventEntity.CategoryEntity(
                 id = 5,
@@ -68,46 +63,30 @@ class LocalDataSource: ILocalDataSource {
             CategoryEntity(
                 id = 1,
                 name = "Música",
-                slug = "Música",
                 description = "Música",
-                icon = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
-                position = 1,
-                isActive = true,
-                createdAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000),
-                updatedAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000)
+                imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
+                order = 1
             ),
             CategoryEntity(
                 id = 2,
                 name = "Deportes",
-                slug = "Deportes",
                 description = "Deportes",
-                icon = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
-                position = 2,
-                isActive = true,
-                createdAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000),
-                updatedAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000)
+                imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
+                order = 2,
             ),
             CategoryEntity(
                 id = 3,
                 name = "Teatro y Comedia",
-                slug = "Teatro y Comedia",
                 description = "Teatro y Comedia",
-                icon = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
-                position = 3,
-                isActive = true,
-                createdAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000),
-                updatedAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000)
+                imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
+                order = 3,
             ),
             CategoryEntity(
                 id = 4,
                 name = "Arte y Cultura",
-                slug = "Arte y Cultura",
                 description = "Arte y Cultura",
-                icon = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
-                position = 4,
-                isActive = true,
-                createdAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000),
-                updatedAt = LocalDateTime(2025, 7, 30, 1, 4, 30, 858000000)
+                imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
+                order = 4,
             )
         )
     }

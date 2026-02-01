@@ -17,6 +17,7 @@ class EventListViewModel(
     private val _state = MutableStateFlow<EventListViewState>(EventListViewState.Loading)
     val state: StateFlow<EventListViewState> = _state
     private var type: String? = null
+    private var category: String? = null
     private var page = 1
     private var hasMorePages = false
     private var memoryEventList: MutableList<EventEntity> = mutableListOf()
@@ -37,7 +38,8 @@ class EventListViewModel(
                 val events = eventListUseCase.getEventList(
                     text = text,
                     type = type,
-                    page = page
+                    page = page,
+                    category = category
                 )
                 memoryEventList.addAll(events.first)
                 hasMorePages = events.second
@@ -56,6 +58,9 @@ class EventListViewModel(
     }
     fun setEventType(type: String){
         this.type = type
+    }
+    fun setCategory(category: Int?){
+        this.category = category.toString()
     }
     fun fetchNewPage(){
         if(hasMorePages) {

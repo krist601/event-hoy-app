@@ -6,8 +6,8 @@ import org.jkc.event.tracker.domain.entity.EventEntity
 
 @Serializable
 data class EventListResponse(
-    val data: List<Event> = emptyList(),
-    val pagination: Pagination
+    val content: List<Event> = emptyList(),
+    val pagination: Pagination? = null
 ) {
     @Serializable
     data class Event(
@@ -37,21 +37,10 @@ data class EventListResponse(
             val id: Int,
             val name: String,
             val address: String,
-            val city: City
-        ) {
-            @Serializable
-            data class City(
-                val id: Int,
-                val name: String,
-                val country: Country
-            ) {
-                @Serializable
-                data class Country(
-                    val id: Int,
-                    val name: String
-                )
-            }
-        }
+            val latitude: Double,
+            val longitude: Double,
+            val url: String?
+        )
     }
 
     @Serializable
@@ -95,14 +84,9 @@ fun EventListResponse.Event.toEntity(): EventEntity {
                 id = it.id,
                 name = it.name,
                 address = it.address,
-                city = EventEntity.VenueEntity.CityEntity(
-                    id = it.city.id,
-                    name = it.city.name,
-                    country = EventEntity.VenueEntity.CityEntity.CountryEntity(
-                        id = it.city.country.id,
-                        name = it.city.country.name
-                    )
-                )
+                latitude = it.latitude,
+                longitude = it.longitude,
+                url = it.url
             )
         },
         category = category?.let {

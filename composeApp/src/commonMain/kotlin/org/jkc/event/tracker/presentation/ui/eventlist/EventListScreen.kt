@@ -62,6 +62,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun EventListRoute(
     eventFilter: String = "",
+    category: Int? = null,
     onEventClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -70,6 +71,7 @@ fun EventListRoute(
     var searchQuery by remember { mutableStateOf("") }
 
     viewModel.setEventType(type = eventFilter)
+    viewModel.setCategory(category = category)
     viewModel.fetchEventList()
 
     Scaffold(
@@ -264,14 +266,9 @@ private val data = EventListUIState(
                 id = 101,
                 name = "Teatro Municipal de Santiago",
                 address = "Agustinas 794",
-                city = EventEntity.VenueEntity.CityEntity(
-                    id = 10,
-                    name = "Santiago",
-                    country = EventEntity.VenueEntity.CityEntity.CountryEntity(
-                        id = 1,
-                        name = "Chile"
-                    )
-                )
+                latitude = -30.01,
+                longitude = -30.01,
+                url = ""
             ),
             category = EventEntity.CategoryEntity(
                 id = 5,

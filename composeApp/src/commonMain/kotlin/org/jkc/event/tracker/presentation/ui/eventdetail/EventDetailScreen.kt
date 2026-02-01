@@ -207,14 +207,9 @@ private val data = EventUIState(
             id = 101,
             name = "Teatro Municipal de Santiago",
             address = "Agustinas 794",
-            city = EventEntity.VenueEntity.CityEntity(
-                id = 10,
-                name = "Santiago",
-                country = EventEntity.VenueEntity.CityEntity.CountryEntity(
-                    id = 1,
-                    name = "Chile"
-                )
-            )
+            latitude = -30.01,
+            longitude = -30.01,
+            url = ""
         ),
         category = EventEntity.CategoryEntity(
             id = 5,

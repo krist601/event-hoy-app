@@ -15,17 +15,19 @@ class EventHoyRepository(
         type: String? = null,
         page: Int? = null,
         date: String? = null,
+        category: String? = null
     ): Pair<List<EventEntity>, Boolean> {
         try {
             val data = apiDataSource.getEventList(
                 text = text,
                 type = type,
                 page = page,
-                date = date
+                date = date,
+                category = category
             )
             return Pair(
-                data.data.toEntity(),
-                data.pagination.hasNext
+                data.content.toEntity(),
+                data.pagination?.hasNext ?: false
             )
         } catch (e: Exception) {
             try {
@@ -48,7 +50,7 @@ class EventHoyRepository(
     }
     suspend fun getCategoryList(): List<CategoryEntity> {
         try {
-            return apiDataSource.getCategoryList().data.toEntity()
+            return apiDataSource.getCategoryList().toEntity()
         } catch (e: Exception) {
             try {
                 val storedCategoryList = localDataSource.getCategoryList()

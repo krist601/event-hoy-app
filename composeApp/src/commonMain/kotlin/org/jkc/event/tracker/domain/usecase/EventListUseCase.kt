@@ -11,12 +11,14 @@ class EventListUseCase(
         type: String? = null,
         page: Int? = null,
         date: String? = null,
+        category: String? = null,
     ): Pair<List<EventEntity>, Boolean> {
         return eventHoyRepository.getEventList(
             text = text,
             type = type,
             page = page,
-            date = date
+            date = date,
+            category = category
         )
     }
 }

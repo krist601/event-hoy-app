@@ -27,19 +27,10 @@ data class EventEntity(
         val id: Int,
         val name: String,
         val address: String,
-        val city: CityEntity
-    ) {
-        data class CityEntity(
-            val id: Int,
-            val name: String,
-            val country: CountryEntity
-        ) {
-            data class CountryEntity(
-                val id: Int,
-                val name: String
-            )
-        }
-    }
+        val latitude: Double,
+        val longitude: Double,
+        val url: String?
+    )
 
     data class AvailableDatesEntity(
         val id: Int,
