@@ -10,6 +10,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.io.IOException
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.domain.entity.LocationEntity
 import org.jkc.event.tracker.domain.usecase.HomeUseCase
 import org.jkc.event.tracker.presentation.ui.common.ErrorType
 import org.jkc.event.tracker.presentation.util.extensions.simpleDateFormat
@@ -43,10 +44,11 @@ class HomeViewModel(
                     text = text,
                     type = EventType.UpcomingEvent.type,
                 )
+                val locationList = homeUseCase.getLocationList()
                 memorySuggestedEventList = suggestedEventList.first.toMutableList()
                 categoryList = homeUseCase.getCategoryList()
                 hasMorePages = suggestedEventList.second
-                _state.value = HomeViewState.Success(memorySuggestedEventList, upcomingEventList, categoryList, false)
+                _state.value = HomeViewState.Success(memorySuggestedEventList, upcomingEventList, categoryList, locationList, false)
             } catch (_: IOException) {
                 _state.value = HomeViewState.Error(ErrorType.NoInternet)
             } catch (_: HttpException) {
@@ -58,7 +60,13 @@ class HomeViewModel(
     }
     fun fetchEventList(
         text: String? = null,
-        date: LocalDate? = null
+        category: String? = null,
+        location: String? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+        latitude: Double? = null,
+        longitude: Double? = null,
+        radius: Int? = null
     ) {
         viewModelScope.launch {
             _state.value = HomeViewState.Success(
@@ -66,10 +74,17 @@ class HomeViewModel(
                 isLoadingMore = true
             )
             try {
+
                 val events = homeUseCase.getEventList(
                     text = text,
                     page = page,
-                    date = date?.simpleDateFormat()
+                    category = category,
+                    location = location,
+                    startDate = startDate.toString(),
+                    endDate = endDate.toString(),
+                    latitude = latitude,
+                    longitude = longitude,
+                    radius = 5//radius
                 )
                 memorySuggestedEventList.addAll(events.first)
                 hasMorePages = events.second
@@ -106,6 +121,7 @@ sealed interface HomeViewState {
         val upcomingEventList: List<EventEntity> = emptyList(),
         val suggestedEventList: List<EventEntity> = emptyList(),
         val categoryList: List<CategoryEntity> = emptyList(),
+        val locationList: List<LocationEntity> = emptyList(),
         val isLoadingMore: Boolean = false
     ) : HomeViewState
     data class Error(val errorType: ErrorType) : HomeViewState

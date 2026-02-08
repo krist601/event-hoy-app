@@ -10,15 +10,23 @@ class EventListUseCase(
         text: String? = null,
         type: String? = null,
         page: Int? = null,
-        date: String? = null,
         category: String? = null,
+        startDate: String? = null,
+        endDate: String? = null,
+        latitude: Double? = null,
+        longitude: Double? = null,
+        radius: Int? = null
     ): Pair<List<EventEntity>, Boolean> {
         return eventHoyRepository.getEventList(
             text = text,
             type = type,
             page = page,
-            date = date,
-            category = category
+            category = category,
+            startDate = startDate,
+            endDate = endDate,
+            latitude = latitude,
+            longitude = longitude,
+            radius = radius
         )
     }
 }

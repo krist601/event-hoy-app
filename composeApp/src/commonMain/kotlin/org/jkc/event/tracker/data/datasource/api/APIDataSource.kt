@@ -11,6 +11,7 @@ import org.jkc.event.tracker.data.entity.response.toEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
 import io.ktor.client.plugins.logging.*
 import org.jkc.event.tracker.data.entity.response.CategoryResponse
+import org.jkc.event.tracker.data.entity.response.LocationResponse
 
 class APIDataSource: IAPIDataSource {
     private val httpClient = HttpClient {
@@ -30,15 +31,25 @@ class APIDataSource: IAPIDataSource {
         text: String?,
         type: String?,
         page: Int?,
-        date: String?,
-        category: String?
+        category: String?,
+        location: String?,
+        startDate: String?,
+        endDate: String?,
+        latitude: Double?,
+        longitude: Double?,
+        radius: Int?
     ): EventListResponse {
         val params = mutableListOf<String>()
 
         text?.let { params += "title=$it" }
         category?.let { params += "categoryId=$it" }
+        location?.let { params += "venueId=$it" }
+        startDate?.let { params += "startDate=$it" }
+        endDate?.let { params += "endDate=$it" }
+        latitude?.let { params += "latitude=$it" }
+        longitude?.let { params += "longitude=$it" }
+        radius?.let { params += "radiusKm=$it" }
         //type?.let { params += "type=$it" }
-        //date?.let{ params += "startdate=$it" }
         //page?.let { params += "page=$it" }
         //params += "limit=10"
 
@@ -58,6 +69,11 @@ class APIDataSource: IAPIDataSource {
     override suspend fun getCategoryList(): List<CategoryResponse> {
         return httpClient.get("${BASE_URL}/public/categories")
             .body<List<CategoryResponse>>()
+    }
+
+    override suspend fun getLocationList(): List<LocationResponse> {
+        return httpClient.get("${BASE_URL}/public/venues")
+            .body<List<LocationResponse>>()
     }
 
     companion object {

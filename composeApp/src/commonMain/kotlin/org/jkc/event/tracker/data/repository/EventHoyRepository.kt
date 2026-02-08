@@ -5,6 +5,7 @@ import org.jkc.event.tracker.data.datasource.local.ILocalDataSource
 import org.jkc.event.tracker.data.entity.response.toEntity
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.domain.entity.LocationEntity
 
 class EventHoyRepository(
     private val apiDataSource: IAPIDataSource,
@@ -14,16 +15,26 @@ class EventHoyRepository(
         text: String? = null,
         type: String? = null,
         page: Int? = null,
-        date: String? = null,
-        category: String? = null
+        category: String? = null,
+        location: String? = null,
+        startDate: String? = null,
+        endDate: String? = null,
+        latitude: Double? = null,
+        longitude: Double? = null,
+        radius: Int? = null
     ): Pair<List<EventEntity>, Boolean> {
         try {
             val data = apiDataSource.getEventList(
                 text = text,
                 type = type,
                 page = page,
-                date = date,
-                category = category
+                category = category,
+                location = location,
+                startDate = startDate,
+                endDate = endDate,
+                latitude = latitude,
+                longitude = longitude,
+                radius = radius
             )
             return Pair(
                 data.content.toEntity(),
@@ -34,7 +45,14 @@ class EventHoyRepository(
                 val storedEventList = localDataSource.getEventList(
                     text = text,
                     type = type,
-                    page = page
+                    page = page,
+                    category = category,
+                    location = location,
+                    startDate = startDate,
+                    endDate = endDate,
+                    latitude = latitude,
+                    longitude = longitude,
+                    radius = radius
                 )
                 if (storedEventList.isNotEmpty()) {
                     return Pair(
@@ -56,6 +74,21 @@ class EventHoyRepository(
                 val storedCategoryList = localDataSource.getCategoryList()
                 if (storedCategoryList.isNotEmpty()) {
                     return storedCategoryList
+                }
+                throw e
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+    }
+    suspend fun getLocationList(): List<LocationEntity> {
+        try {
+            return apiDataSource.getLocationList().toEntity()
+        } catch (e: Exception) {
+            try {
+                val storedLocationList = localDataSource.getLocationList()
+                if (storedLocationList.isNotEmpty()) {
+                    return storedLocationList
                 }
                 throw e
             } catch (e: Exception) {

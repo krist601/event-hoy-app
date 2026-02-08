@@ -63,6 +63,8 @@ import org.jkc.event.tracker.presentation.ui.eventlist.EventCard
 import org.jkc.event.tracker.presentation.util.uistates.HomeUIState
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.datetime.*
+import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.presentation.ui.common.LocationList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,12 +120,14 @@ fun HomeRoute(
                             data = HomeUIState(
                                 upcomingEventList = currentState.upcomingEventList,
                                 suggestedEventList = currentState.suggestedEventList,
-                                categoryList = currentState.categoryList
+                                categoryList = currentState.categoryList,
+                                locationList = currentState.locationList
                             ),
                             onCategoryEventsClick = onCategoryEventsClick,
                             onEventClick = onEventClick,
                             onUpcomingEventsClick = onUpcomingEventsClick,
                             onSuggestedEventsClick = onSuggestedEventsClick,
+                            onLocationSelectedClick = { viewModel.fetchEventList() },
                             onLoadNewPage = { viewModel.fetchNewPage() }
                         )
                     }
@@ -148,7 +152,7 @@ fun HomeRoute(
             CalendarComponent(
                 selectedDate = selectedDate,
                 onDateSelected = { date ->
-                    viewModel.fetchEventList(date = date)
+                    viewModel.fetchEventList(startDate = date)
                     showSheet = false
                 }
             )
@@ -284,6 +288,7 @@ fun LateralEventCard(
 fun HomeScreen(
     data: HomeUIState,
     onCategoryEventsClick: (Int) -> Unit,
+    onLocationSelectedClick: (LocationEntity) -> Unit,
     onEventClick: (Int) -> Unit,
     onUpcomingEventsClick: () -> Unit,
     onSuggestedEventsClick: () -> Unit,
@@ -311,6 +316,12 @@ fun HomeScreen(
             CategoryList(
                 categoryList = data.categoryList,
                 onCategoryEventsClick = onCategoryEventsClick
+            )
+        }
+        item {
+            LocationList(
+                locationList = data.locationList,
+                onLocationEventsSelected = onLocationSelectedClick
             )
         }
 

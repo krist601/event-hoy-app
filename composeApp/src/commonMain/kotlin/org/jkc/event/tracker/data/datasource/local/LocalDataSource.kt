@@ -3,12 +3,21 @@ package org.jkc.event.tracker.data.datasource.local
 import kotlinx.datetime.LocalDateTime
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.domain.entity.LocationEntity
 
 class LocalDataSource: ILocalDataSource {
+
     override fun getEventList(
         text: String?,
         type: String?,
-        page: Int?
+        page: Int?,
+        category: String?,
+        location: String?,
+        startDate: String?,
+        endDate: String?,
+        latitude: Double?,
+        longitude: Double?,
+        radius: Int?
     ): List<EventEntity> {
         return emptyList()
     }
@@ -87,6 +96,19 @@ class LocalDataSource: ILocalDataSource {
                 description = "Arte y Cultura",
                 imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
                 order = 4,
+            )
+        )
+    }
+
+    override fun getLocationList(): List<LocationEntity>{
+        return listOf(
+            LocationEntity(
+                id = 1,
+                name = "Teatro Municipal de Santiago",
+                address = "Agustinas 794",
+                latitude = -30.01,
+                longitude = -30.01,
+                url = ""
             )
         )
     }
