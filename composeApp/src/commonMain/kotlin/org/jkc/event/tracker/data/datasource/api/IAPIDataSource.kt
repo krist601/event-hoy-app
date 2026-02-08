@@ -16,7 +16,7 @@ interface IAPIDataSource {
         endDate: String? = null,
         latitude: Double? = null,
         longitude: Double? = null,
-        radius: Int? = null
+        radius: Int? = null,
     ): EventListResponse
     suspend fun getEventById(id: Int): EventEntity
     suspend fun getCategoryList(): List<CategoryResponse>

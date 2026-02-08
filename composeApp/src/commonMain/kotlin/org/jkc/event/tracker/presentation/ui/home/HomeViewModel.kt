@@ -14,9 +14,11 @@ import org.jkc.event.tracker.domain.entity.LocationEntity
 import org.jkc.event.tracker.domain.usecase.HomeUseCase
 import org.jkc.event.tracker.presentation.ui.common.ErrorType
 import org.jkc.event.tracker.presentation.util.extensions.simpleDateFormat
+import org.jkc.event.tracker.expected.interfaces.ILocationService
 
 class HomeViewModel(
-    private val homeUseCase: HomeUseCase
+    private val homeUseCase: HomeUseCase,
+    private val locationService: ILocationService
 ): ViewModel() {
     private val _state = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
     val state: StateFlow<HomeViewState> = _state
@@ -25,6 +27,16 @@ class HomeViewModel(
     private var memorySuggestedEventList: MutableList<EventEntity> = mutableListOf()
     private var upcomingEventList: List<EventEntity> = emptyList()
     private var categoryList: List<CategoryEntity> = emptyList()
+    private var locationList: List<LocationEntity> = emptyList()
+
+    var text: String? = null
+    var category: String? = null
+    var location: String? = null
+    var startDate: LocalDate? = null
+    var endDate: LocalDate? = null
+    var latitude: Double? = null
+    var longitude: Double? = null
+    var radius: Int? = null
 
     init {
         fetchHomeData()
@@ -44,7 +56,7 @@ class HomeViewModel(
                     text = text,
                     type = EventType.UpcomingEvent.type,
                 )
-                val locationList = homeUseCase.getLocationList()
+                locationList = homeUseCase.getLocationList()
                 memorySuggestedEventList = suggestedEventList.first.toMutableList()
                 categoryList = homeUseCase.getCategoryList()
                 hasMorePages = suggestedEventList.second
@@ -58,30 +70,21 @@ class HomeViewModel(
             }
         }
     }
-    fun fetchEventList(
-        text: String? = null,
-        category: String? = null,
-        location: String? = null,
-        startDate: LocalDate? = null,
-        endDate: LocalDate? = null,
-        latitude: Double? = null,
-        longitude: Double? = null,
-        radius: Int? = null
-    ) {
+    fun fetchEventList() {
         viewModelScope.launch {
-            _state.value = HomeViewState.Success(
-                suggestedEventList = memorySuggestedEventList,
-                isLoadingMore = true
-            )
+            val isFiltering = !text.isNullOrEmpty() || !category.isNullOrEmpty() || !location.isNullOrEmpty()
+            val isFilteringDate = !startDate?.toString().isNullOrEmpty() || !endDate?.toString().isNullOrEmpty()
+
+            _state.value = HomeViewState.Loading
             try {
 
                 val events = homeUseCase.getEventList(
-                    text = text,
+                    text = text.orEmpty(),
                     page = page,
-                    category = category,
-                    location = location,
-                    startDate = startDate.toString(),
-                    endDate = endDate.toString(),
+                    category = category.orEmpty(),
+                    location = location.orEmpty(),
+                    startDate = startDate?.toString().orEmpty(),
+                    endDate = endDate?.toString().orEmpty(),
                     latitude = latitude,
                     longitude = longitude,
                     radius = 5//radius
@@ -90,8 +93,9 @@ class HomeViewModel(
                 hasMorePages = events.second
                 _state.value = HomeViewState.Success(
                     suggestedEventList = memorySuggestedEventList,
-                    upcomingEventList = upcomingEventList,
-                    categoryList = categoryList,
+                    upcomingEventList = if (isFiltering && isFilteringDate) emptyList() else upcomingEventList,
+                    categoryList = if (isFiltering) emptyList() else categoryList,
+                    locationList = locationList,
                     isLoadingMore = false
                 )
             } catch (_: IOException) {
@@ -107,10 +111,33 @@ class HomeViewModel(
         this.page = 1
         memorySuggestedEventList = mutableListOf()
     }
+    fun resetFilters(){
+        text = null
+        category = null
+        location = null
+        startDate = null
+        endDate = null
+        latitude = null
+        longitude = null
+        radius = null
+    }
     fun fetchNewPage(){
         if(hasMorePages) {
             this.page += 1
             fetchEventList()
+        }
+    }
+
+    fun fetchCurrentLocation() {
+        viewModelScope.launch {
+            val locationEntity = locationService.getCurrentLocation()
+            if (locationEntity != null) {
+                latitude = locationEntity.latitude
+                longitude = locationEntity.longitude
+                location = null
+                resetPages()
+                fetchEventList()
+            }
         }
     }
 }

@@ -64,6 +64,7 @@ import org.jkc.event.tracker.presentation.util.uistates.HomeUIState
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.datetime.*
 import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.presentation.ui.common.LocationBottomSheet
 import org.jkc.event.tracker.presentation.ui.common.LocationList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +80,8 @@ fun HomeRoute(
     var searchQuery by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
+    var showLocationSheet by remember { mutableStateOf(false) }
+    var selectedLocation by remember { mutableStateOf<LocationEntity?>(null) }
     var selectedDate by remember {
         mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault()))
     }
@@ -108,13 +111,31 @@ fun HomeRoute(
                 is HomeViewState.Success -> {
 
                     Column {
+//                        SearchBarComponent(
+//                            query = searchQuery,
+//                            onQueryChanged = {
+//                                searchQuery = it
+//                            },
+//                            onLocationClick = { showLocationSheet = true },
+//                            selectedLocation = selectedLocation?.name
+//                        )
+
+                        LaunchedEffect(searchQuery) {
+                            if (searchQuery != (viewModel.text.orEmpty())) {
+                                kotlinx.coroutines.delay(1000)
+                                viewModel.resetPages()
+                                viewModel.text = searchQuery.ifEmpty { null }
+                                viewModel.fetchEventList()
+                            }
+                        }
+
                         SearchBarComponent(
                             query = searchQuery,
                             onQueryChanged = {
                                 searchQuery = it
-                                viewModel.resetPages()
-                                viewModel.fetchEventList(searchQuery)
-                            }
+                            },
+                            onLocationClick = { showLocationSheet = true },
+                            selectedLocation = selectedLocation?.name
                         )
                         HomeScreen(
                             data = HomeUIState(
@@ -127,7 +148,6 @@ fun HomeRoute(
                             onEventClick = onEventClick,
                             onUpcomingEventsClick = onUpcomingEventsClick,
                             onSuggestedEventsClick = onSuggestedEventsClick,
-                            onLocationSelectedClick = { viewModel.fetchEventList() },
                             onLoadNewPage = { viewModel.fetchNewPage() }
                         )
                     }
@@ -137,7 +157,11 @@ fun HomeRoute(
                 is HomeViewState.Error -> {
                     ErrorContent(
                         errorType = currentState.errorType,
-                        onRetryClick = { viewModel.fetchEventList() }
+                        onRetryClick = {
+                            viewModel.resetPages()
+                            viewModel.resetFilters()
+                            viewModel.fetchEventList()
+                        }
                     )
                 }
             }
@@ -152,11 +176,33 @@ fun HomeRoute(
             CalendarComponent(
                 selectedDate = selectedDate,
                 onDateSelected = { date ->
-                    viewModel.fetchEventList(startDate = date)
+                    viewModel.startDate = date
+                    viewModel.fetchEventList()
                     showSheet = false
                 }
             )
         }
+    }
+
+    if (showLocationSheet) {
+        LocationBottomSheet(
+            locationList = (state as? HomeViewState.Success)?.locationList ?: emptyList(),
+            onLocationSelected = { location ->
+                if (location?.id == -1) {
+                     viewModel.fetchCurrentLocation()
+                     showLocationSheet = false
+                     selectedLocation = location
+                } else {
+                    selectedLocation = location
+                    viewModel.location = location?.id?.toString()
+                    showLocationSheet = false
+                    viewModel.resetPages()
+                    viewModel.fetchEventList()
+                }
+            },
+            onDismissRequest = { showLocationSheet = false },
+            sheetState = sheetState
+        )
     }
 }
 @Composable
@@ -176,14 +222,14 @@ fun UpcomingEventsRow(
                 text = "Proximos Eventos",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
-            Text(
+            /*Text(
                 text = "Todos",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(16.dp)
                     .clickable { onUpcomingEventsClick.invoke() }
-            )
+            )*/
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -288,7 +334,6 @@ fun LateralEventCard(
 fun HomeScreen(
     data: HomeUIState,
     onCategoryEventsClick: (Int) -> Unit,
-    onLocationSelectedClick: (LocationEntity) -> Unit,
     onEventClick: (Int) -> Unit,
     onUpcomingEventsClick: () -> Unit,
     onSuggestedEventsClick: () -> Unit,
@@ -312,26 +357,24 @@ fun HomeScreen(
         state = listState,
         contentPadding = PaddingValues(0.dp)
     ) {
-        item {
-            CategoryList(
-                categoryList = data.categoryList,
-                onCategoryEventsClick = onCategoryEventsClick
-            )
-        }
-        item {
-            LocationList(
-                locationList = data.locationList,
-                onLocationEventsSelected = onLocationSelectedClick
-            )
+        if (data.categoryList.isNotEmpty()) {
+            item {
+                CategoryList(
+                    categoryList = data.categoryList,
+                    onCategoryEventsClick = onCategoryEventsClick
+                )
+            }
         }
 
-        item {
-            UpcomingEventsRow(
-                modifier = Modifier.padding(top = 16.dp),
-                events = data.upcomingEventList,
-                onEventClick = onEventClick,
-                onUpcomingEventsClick = onUpcomingEventsClick
-            )
+        if (data.upcomingEventList.isNotEmpty()) {
+            item {
+                UpcomingEventsRow(
+                    modifier = Modifier.padding(top = 16.dp),
+                    events = data.upcomingEventList,
+                    onEventClick = onEventClick,
+                    onUpcomingEventsClick = onUpcomingEventsClick
+                )
+            }
         }
 
         item{
@@ -343,12 +386,12 @@ fun HomeScreen(
                     text = "Sugeridos para ti",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
-                Text(
+                /*Text(
                     text = "Todos",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { onSuggestedEventsClick.invoke() }
-                )
+                )*/
             }
         }
 

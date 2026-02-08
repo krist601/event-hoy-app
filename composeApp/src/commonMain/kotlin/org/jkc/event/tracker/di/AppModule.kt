@@ -13,6 +13,8 @@ import org.jkc.event.tracker.expected.interfaces.IExpectedShare
 import org.jkc.event.tracker.presentation.ui.eventlist.EventListViewModel
 import org.jkc.event.tracker.presentation.ui.eventdetail.EventDetailViewModel
 import org.jkc.event.tracker.presentation.ui.home.HomeViewModel
+import org.jkc.event.tracker.expected.classes.LocationService
+import org.jkc.event.tracker.expected.interfaces.ILocationService
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -42,9 +44,11 @@ val appModule = module {
         )
     }
 
+    single<ILocationService> { LocationService() }
+
     viewModel { EventDetailViewModel(eventDetailUseCase = get()) }
     viewModel { EventListViewModel(eventListUseCase = get()) }
-    viewModel { HomeViewModel(homeUseCase = get()) }
+    viewModel { HomeViewModel(homeUseCase = get(), locationService = get()) }
 }
 
 //expect val platformModule: Module

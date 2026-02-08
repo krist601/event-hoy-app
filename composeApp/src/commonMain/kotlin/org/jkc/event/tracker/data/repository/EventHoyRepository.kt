@@ -34,7 +34,7 @@ class EventHoyRepository(
                 endDate = endDate,
                 latitude = latitude,
                 longitude = longitude,
-                radius = radius
+                radius = radius,
             )
             return Pair(
                 data.content.toEntity(),

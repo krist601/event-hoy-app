@@ -94,7 +94,8 @@ fun EventListRoute(
                     searchQuery = it
                     viewModel.resetPages()
                     viewModel.fetchEventList(searchQuery)
-                }
+                },
+                onLocationClick = {},
             )
             Box(
                 modifier = Modifier

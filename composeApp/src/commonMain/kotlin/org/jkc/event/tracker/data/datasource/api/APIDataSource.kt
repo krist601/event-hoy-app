@@ -37,18 +37,18 @@ class APIDataSource: IAPIDataSource {
         endDate: String?,
         latitude: Double?,
         longitude: Double?,
-        radius: Int?
+        radius: Int?,
     ): EventListResponse {
         val params = mutableListOf<String>()
 
-        text?.let { params += "title=$it" }
-        category?.let { params += "categoryId=$it" }
-        location?.let { params += "venueId=$it" }
-        startDate?.let { params += "startDate=$it" }
-        endDate?.let { params += "endDate=$it" }
+        if (!text.isNullOrEmpty()) { params += "title=$text" }
+        if (!category.isNullOrEmpty()) { params += "categoryId=$category" }
+        if (!location.isNullOrEmpty()) { params += "venueId=$location" }
+        if (!startDate.isNullOrEmpty()) { params += "startDate=${startDate}T00:00:00" }
+        if (!endDate.isNullOrEmpty()) { params += "endDate=${endDate}T00:00:00" }
         latitude?.let { params += "latitude=$it" }
         longitude?.let { params += "longitude=$it" }
-        radius?.let { params += "radiusKm=$it" }
+        //radius?.let { params += "radiusKm=$it" }
         //type?.let { params += "type=$it" }
         //page?.let { params += "page=$it" }
         //params += "limit=10"
