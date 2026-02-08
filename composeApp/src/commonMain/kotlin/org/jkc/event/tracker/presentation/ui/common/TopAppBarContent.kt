@@ -29,7 +29,8 @@ fun CustomTopAppBar(
     title: String,
     onBackClick: (() -> Unit)?,
     onNotificationsClick: (() -> Unit)?,
-    onCalendarClick: (() -> Unit)?
+    onCalendarClick: (() -> Unit)?,
+    hasDateSelected: Boolean = false
 ) {
     TopAppBar(
         title = {
@@ -61,7 +62,8 @@ fun CustomTopAppBar(
                 IconButton(onClick = it) {
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "Calendar"
+                        contentDescription = "Calendar",
+                        tint = if(hasDateSelected) Color.Red else Color.Black
                     )
                 }
             }

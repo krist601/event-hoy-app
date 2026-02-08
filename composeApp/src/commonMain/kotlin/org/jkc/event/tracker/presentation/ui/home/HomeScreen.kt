@@ -86,14 +86,22 @@ fun HomeRoute(
         mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault()))
     }
 
+    val dateTitle = remember(viewModel.startDate) {
+        viewModel.startDate?.let { date ->
+            val monthName = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+            "${date.dayOfMonth} de $monthName"
+        }
+    }
+
     Scaffold(
         modifier = Modifier.background(Color.White),
         topBar = {
             CustomTopAppBar(
-                stringResource(Res.string.app_name),
+                title = dateTitle ?: stringResource(Res.string.app_name),
                 onBackClick = null,
                 onNotificationsClick = null,
-                onCalendarClick = { showSheet = true }
+                onCalendarClick = { showSheet = true },
+                hasDateSelected = viewModel.startDate != null
             )
         }
     ) { innerPadding ->
@@ -177,6 +185,13 @@ fun HomeRoute(
                 selectedDate = selectedDate,
                 onDateSelected = { date ->
                     viewModel.startDate = date
+                    viewModel.resetPages()
+                    viewModel.fetchEventList()
+                    showSheet = false
+                },
+                onClearClick = {
+                    viewModel.startDate = null
+                    viewModel.resetPages()
                     viewModel.fetchEventList()
                     showSheet = false
                 }

@@ -28,11 +28,12 @@ import kotlinx.datetime.*
 
 @Composable
 fun CalendarComponent(
-    selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    selectedDate: LocalDate?,
+    onDateSelected: (LocalDate) -> Unit,
+    onClearClick: () -> Unit
 ) {
     var currentMonth by remember {
-        mutableStateOf(YearMonth(selectedDate.year, selectedDate.month))
+        mutableStateOf(YearMonth(selectedDate?.year ?: Clock.System.todayIn(TimeZone.currentSystemDefault()).year, selectedDate?.month ?: Clock.System.todayIn(TimeZone.currentSystemDefault()).month))
     }
 
     val daysInMonth = currentMonth.lengthOfMonth()
@@ -85,6 +86,19 @@ fun CalendarComponent(
                     )
                 }
             }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        androidx.compose.material3.Button(
+            onClick = onClearClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text("Limpiar filtro")
         }
     }
 }

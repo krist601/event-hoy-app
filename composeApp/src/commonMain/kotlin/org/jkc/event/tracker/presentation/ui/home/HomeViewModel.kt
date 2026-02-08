@@ -93,7 +93,7 @@ class HomeViewModel(
                 hasMorePages = events.second
                 _state.value = HomeViewState.Success(
                     suggestedEventList = memorySuggestedEventList,
-                    upcomingEventList = if (isFiltering && isFilteringDate) emptyList() else upcomingEventList,
+                    upcomingEventList = if (isFiltering || isFilteringDate) emptyList() else upcomingEventList,
                     categoryList = if (isFiltering) emptyList() else categoryList,
                     locationList = locationList,
                     isLoadingMore = false
