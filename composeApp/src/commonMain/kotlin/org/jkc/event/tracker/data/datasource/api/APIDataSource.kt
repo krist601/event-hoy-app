@@ -44,7 +44,7 @@ class APIDataSource: IAPIDataSource {
         val params = mutableListOf<String>()
 
         if (!text.isNullOrEmpty()) { params += "title=$text" }
-        if (!subCategory.isNullOrEmpty()) { params += "subCategoryId=$subCategory" }
+        if (!subCategory.isNullOrEmpty()) { params += "subcategoryId=$subCategory" }
         else if (!category.isNullOrEmpty()) { params += "categoryId=$category" }
         if (!location.isNullOrEmpty()) { params += "venueId=$location" }
         if (!startDate.isNullOrEmpty()) { params += "startDate=${startDate}T00:00:00" }
