@@ -2,6 +2,7 @@ package org.jkc.event.tracker.domain.usecase
 
 import org.jkc.event.tracker.data.repository.EventHoyRepository
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
 
 class EventListUseCase(
     private val eventHoyRepository: EventHoyRepository
@@ -28,5 +29,8 @@ class EventListUseCase(
             longitude = longitude,
             radius = radius
         )
+    }
+    suspend fun getSubCategories(categoryId: String?): List<SubCategoryEntity> {
+        return eventHoyRepository.getSubCategoryList(categoryId)
     }
 }

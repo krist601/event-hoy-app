@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
 import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
 
 class LocalDataSource: ILocalDataSource {
 
@@ -12,6 +13,7 @@ class LocalDataSource: ILocalDataSource {
         type: String?,
         page: Int?,
         category: String?,
+        subCategory: String?,
         location: String?,
         startDate: String?,
         endDate: String?,
@@ -96,6 +98,23 @@ class LocalDataSource: ILocalDataSource {
                 description = "Arte y Cultura",
                 imageUrl = "https://applications-media.feverup.com/image/upload/f_auto,w_96,h_96,q_auto:best/fever2/filter/photo/41fd2970-0eb9-11ef-be76-d6e48d311834.png",
                 order = 4,
+            )
+        )
+    }
+
+    override fun getSubCategoryList(categoryId: String?): List<SubCategoryEntity> {
+        return listOf(
+            SubCategoryEntity(
+                id = 1,
+                name = "Teatro",
+                categoryId = "4",
+                order = 1,
+            ),
+            SubCategoryEntity(
+                id = 2,
+                name = "Coreografia",
+                categoryId = "4",
+                order = 2,
             )
         )
     }

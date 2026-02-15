@@ -6,6 +6,8 @@ import org.jkc.event.tracker.data.entity.response.toEntity
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
 import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
+
 
 class EventHoyRepository(
     private val apiDataSource: IAPIDataSource,
@@ -16,6 +18,7 @@ class EventHoyRepository(
         type: String? = null,
         page: Int? = null,
         category: String? = null,
+        subCategory: String? = null,
         location: String? = null,
         startDate: String? = null,
         endDate: String? = null,
@@ -29,6 +32,7 @@ class EventHoyRepository(
                 type = type,
                 page = page,
                 category = category,
+                subCategory = subCategory,
                 location = location,
                 startDate = startDate,
                 endDate = endDate,
@@ -38,7 +42,7 @@ class EventHoyRepository(
             )
             return Pair(
                 data.content.toEntity(),
-                data.pagination?.hasNext ?: false
+                !data.last
             )
         } catch (e: Exception) {
             try {
@@ -47,6 +51,7 @@ class EventHoyRepository(
                     type = type,
                     page = page,
                     category = category,
+                    subCategory = subCategory,
                     location = location,
                     startDate = startDate,
                     endDate = endDate,
@@ -91,6 +96,20 @@ class EventHoyRepository(
                     return storedLocationList
                 }
                 throw e
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+    }
+
+
+
+    suspend fun getSubCategoryList(categoryId: String?): List<SubCategoryEntity> {
+        return try {
+            apiDataSource.getSubCategoryList(categoryId).toEntity()
+        } catch (e: Exception) {
+            try {
+                localDataSource.getSubCategoryList(categoryId)
             } catch (e: Exception) {
                 throw e
             }

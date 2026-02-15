@@ -11,6 +11,7 @@ import kotlinx.io.IOException
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.EventEntity
 import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
 import org.jkc.event.tracker.domain.usecase.HomeUseCase
 import org.jkc.event.tracker.presentation.ui.common.ErrorType
 import org.jkc.event.tracker.presentation.util.extensions.simpleDateFormat
@@ -22,15 +23,17 @@ class HomeViewModel(
 ): ViewModel() {
     private val _state = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
     val state: StateFlow<HomeViewState> = _state
-    private var page = 1
+    private var page = 0
     private var hasMorePages = false
+    private var categorySelected: CategoryEntity? = null
+    private var subCategorySelected: SubCategoryEntity? = null
     private var memorySuggestedEventList: MutableList<EventEntity> = mutableListOf()
     private var upcomingEventList: List<EventEntity> = emptyList()
     private var categoryList: List<CategoryEntity> = emptyList()
+    private var subCategoryList: List<SubCategoryEntity> = emptyList()
     private var locationList: List<LocationEntity> = emptyList()
 
     var text: String? = null
-    var category: String? = null
     var location: String? = null
     var startDate: LocalDate? = null
     var endDate: LocalDate? = null
@@ -60,7 +63,7 @@ class HomeViewModel(
                 memorySuggestedEventList = suggestedEventList.first.toMutableList()
                 categoryList = homeUseCase.getCategoryList()
                 hasMorePages = suggestedEventList.second
-                _state.value = HomeViewState.Success(memorySuggestedEventList, upcomingEventList, categoryList, locationList, false)
+                _state.value = HomeViewState.Success(memorySuggestedEventList, upcomingEventList, categoryList, null, emptyList(), locationList, false)
             } catch (_: IOException) {
                 _state.value = HomeViewState.Error(ErrorType.NoInternet)
             } catch (_: HttpException) {
@@ -72,16 +75,21 @@ class HomeViewModel(
     }
     fun fetchEventList() {
         viewModelScope.launch {
-            val isFiltering = !text.isNullOrEmpty() || !category.isNullOrEmpty() || !location.isNullOrEmpty()
+            val isFiltering = !text.isNullOrEmpty() || categorySelected != null || !location.isNullOrEmpty()
+            val isFilteringSubCategory = !text.isNullOrEmpty() || categorySelected == null || !location.isNullOrEmpty() //|| subCategorySelected != null
             val isFilteringDate = !startDate?.toString().isNullOrEmpty() || !endDate?.toString().isNullOrEmpty()
 
             _state.value = HomeViewState.Loading
             try {
 
+                if(categorySelected != null) {
+                    subCategoryList = homeUseCase.getSubCategoryList(categorySelected?.id?.toString())
+                }
                 val events = homeUseCase.getEventList(
                     text = text.orEmpty(),
                     page = page,
-                    category = category.orEmpty(),
+                    category = categorySelected?.id?.toString(),
+                    subCategory = subCategorySelected?.id?.toString(),
                     location = location.orEmpty(),
                     startDate = startDate?.toString().orEmpty(),
                     endDate = endDate?.toString().orEmpty(),
@@ -89,12 +97,16 @@ class HomeViewModel(
                     longitude = longitude,
                     radius = 5//radius
                 )
-                memorySuggestedEventList.addAll(events.first)
+                if(page != 0) memorySuggestedEventList.addAll(events.first)
+                else memorySuggestedEventList = events.first.toMutableList()
+
                 hasMorePages = events.second
                 _state.value = HomeViewState.Success(
                     suggestedEventList = memorySuggestedEventList,
                     upcomingEventList = if (isFiltering || isFilteringDate) emptyList() else upcomingEventList,
                     categoryList = if (isFiltering) emptyList() else categoryList,
+                    categorySelected = categorySelected,
+                    subCategoryList = if(isFilteringSubCategory) emptyList() else subCategoryList,
                     locationList = locationList,
                     isLoadingMore = false
                 )
@@ -108,12 +120,13 @@ class HomeViewModel(
         }
     }
     fun resetPages(){
-        this.page = 1
+        this.page = 0
         memorySuggestedEventList = mutableListOf()
     }
     fun resetFilters(){
         text = null
-        category = null
+        categorySelected = null
+        subCategorySelected = null
         location = null
         startDate = null
         endDate = null
@@ -140,6 +153,16 @@ class HomeViewModel(
             }
         }
     }
+
+    fun setCategory(category: CategoryEntity) {
+        categorySelected = category
+    }
+    fun setSubCategory(subCategory: SubCategoryEntity) {
+        if (subCategory.id < 0) {
+            categorySelected = null
+            subCategorySelected = null
+        } else subCategorySelected = subCategory
+    }
 }
 
 sealed interface HomeViewState {
@@ -148,6 +171,8 @@ sealed interface HomeViewState {
         val upcomingEventList: List<EventEntity> = emptyList(),
         val suggestedEventList: List<EventEntity> = emptyList(),
         val categoryList: List<CategoryEntity> = emptyList(),
+        val categorySelected: CategoryEntity?,
+        val subCategoryList: List<SubCategoryEntity> = emptyList(),
         val locationList: List<LocationEntity> = emptyList(),
         val isLoadingMore: Boolean = false
     ) : HomeViewState

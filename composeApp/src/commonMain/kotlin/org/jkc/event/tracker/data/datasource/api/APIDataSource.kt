@@ -12,6 +12,7 @@ import org.jkc.event.tracker.domain.entity.EventEntity
 import io.ktor.client.plugins.logging.*
 import org.jkc.event.tracker.data.entity.response.CategoryResponse
 import org.jkc.event.tracker.data.entity.response.LocationResponse
+import org.jkc.event.tracker.data.entity.response.SubCategoryResponse
 
 class APIDataSource: IAPIDataSource {
     private val httpClient = HttpClient {
@@ -32,6 +33,7 @@ class APIDataSource: IAPIDataSource {
         type: String?,
         page: Int?,
         category: String?,
+        subCategory: String?,
         location: String?,
         startDate: String?,
         endDate: String?,
@@ -42,7 +44,8 @@ class APIDataSource: IAPIDataSource {
         val params = mutableListOf<String>()
 
         if (!text.isNullOrEmpty()) { params += "title=$text" }
-        if (!category.isNullOrEmpty()) { params += "categoryId=$category" }
+        if (!subCategory.isNullOrEmpty()) { params += "subCategoryId=$subCategory" }
+        else if (!category.isNullOrEmpty()) { params += "categoryId=$category" }
         if (!location.isNullOrEmpty()) { params += "venueId=$location" }
         if (!startDate.isNullOrEmpty()) { params += "startDate=${startDate}T00:00:00" }
         if (!endDate.isNullOrEmpty()) { params += "endDate=${endDate}T00:00:00" }
@@ -50,7 +53,7 @@ class APIDataSource: IAPIDataSource {
         longitude?.let { params += "longitude=$it" }
         //radius?.let { params += "radiusKm=$it" }
         //type?.let { params += "type=$it" }
-        //page?.let { params += "page=$it" }
+        page?.let { params += "page=$it" }
         //params += "limit=10"
 
         val query =
@@ -76,7 +79,12 @@ class APIDataSource: IAPIDataSource {
             .body<List<LocationResponse>>()
     }
 
+    override suspend fun getSubCategoryList(categoryId: String?): List<SubCategoryResponse> {
+        return httpClient.get("${BASE_URL}/public/subcategories?categoryId=$categoryId")
+            .body<List<SubCategoryResponse>>()
+    }
+
     companion object {
-        private const val BASE_URL = "http://10.0.2.2:8080/api"
+        private const val BASE_URL = "https://api.eventhoy.com/api"
     }
 }

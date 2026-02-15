@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
 import org.jkc.event.tracker.domain.entity.EventEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
 import org.jkc.event.tracker.domain.usecase.EventListUseCase
 import org.jkc.event.tracker.presentation.ui.common.ErrorType
 
@@ -16,6 +17,9 @@ class EventListViewModel(
 ): ViewModel() {
     private val _state = MutableStateFlow<EventListViewState>(EventListViewState.Loading)
     val state: StateFlow<EventListViewState> = _state
+    private val _subCategories = MutableStateFlow<List<SubCategoryEntity>>(emptyList())
+    val subCategories: StateFlow<List<SubCategoryEntity>> = _subCategories
+
     private var type: String? = null
     private var category: String? = null
     private var page = 1
@@ -35,6 +39,7 @@ class EventListViewModel(
                 )
             }
             try {
+                _subCategories.value = eventListUseCase.getSubCategories(category)
                 val events = eventListUseCase.getEventList(
                     text = text,
                     type = type,

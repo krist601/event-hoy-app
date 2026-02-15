@@ -7,7 +7,16 @@ import org.jkc.event.tracker.domain.entity.EventEntity
 @Serializable
 data class EventListResponse(
     val content: List<Event> = emptyList(),
-    val pagination: Pagination? = null
+    val pageable: Pageable? = null,
+    val last: Boolean,
+    val totalElements: Int,
+    val totalPages: Int,
+    val first: Boolean,
+    val size: Int,
+    val number: Int,
+    val sort: Sort,
+    val numberOfElements: Int,
+    val empty: Boolean
 ) {
     @Serializable
     data class Event(
@@ -44,13 +53,20 @@ data class EventListResponse(
     }
 
     @Serializable
-    data class Pagination(
-        val page: Int,
-        val limit: Int,
-        val total: Int,
-        val totalPages: Int,
-        val hasNext: Boolean,
-        val hasPrev: Boolean
+    data class Pageable(
+        val pageNumber: Int,
+        val pageSize: Int,
+        val sort: Sort,
+        val offset: Long,
+        val paged: Boolean,
+        val unpaged: Boolean
+    )
+
+    @Serializable
+    data class Sort(
+        val empty: Boolean,
+        val sorted: Boolean,
+        val unsorted: Boolean
     )
 
     @Serializable

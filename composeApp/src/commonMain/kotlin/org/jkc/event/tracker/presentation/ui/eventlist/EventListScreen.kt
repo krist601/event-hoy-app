@@ -55,6 +55,7 @@ import org.jkc.event.tracker.presentation.ui.common.CustomTopAppBar
 import org.jkc.event.tracker.presentation.ui.common.ErrorContent
 import org.jkc.event.tracker.presentation.ui.common.LoadingContent
 import org.jkc.event.tracker.presentation.ui.common.SearchBarComponent
+import org.jkc.event.tracker.presentation.ui.common.SubCategoryList
 import org.jkc.event.tracker.presentation.util.uistates.EventListUIState
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -68,6 +69,7 @@ fun EventListRoute(
 ) {
     val viewModel = koinViewModel<EventListViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val subCategories by viewModel.subCategories.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
 
     viewModel.setEventType(type = eventFilter)
@@ -82,7 +84,7 @@ fun EventListRoute(
                 onBackClick = {
                     onBackClick()
                 },
-                onNotificationsClick = {},
+                onNotificationsClick = null,
                 onCalendarClick = {}
             )
         }
@@ -101,7 +103,7 @@ fun EventListRoute(
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(bottom = innerPadding.calculateBottomPadding())
             ) {
 
                 when (val currentState = state) {
@@ -112,7 +114,8 @@ fun EventListRoute(
                     is EventListViewState.Success -> {
                         EventListScreen(
                             data = EventListUIState(
-                                currentState.eventList
+                                eventList = currentState.eventList,
+                                subCategories = subCategories
                             ),
                             onEventClick = onEventClick,
                             onLoadNewPage = {
@@ -156,6 +159,15 @@ fun EventListScreen(
     }
 
     LazyColumn(state = listState) {
+        if(data.subCategories.isNotEmpty()){
+            item {
+                SubCategoryList(
+                    title = "",
+                    subCategoryList = data.subCategories,
+                    onCategoryEventsClick = { /* TODO: Handle click */ }
+                )
+            }
+        }
         items(data.eventList) { event ->
             EventCard(event = event) {
                 onEventClick.invoke(event.id)

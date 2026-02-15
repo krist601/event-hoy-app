@@ -47,7 +47,11 @@ val appModule = module {
     single<ILocationService> { LocationService() }
 
     viewModel { EventDetailViewModel(eventDetailUseCase = get()) }
-    viewModel { EventListViewModel(eventListUseCase = get()) }
+    viewModel {
+        EventListViewModel(
+            eventListUseCase = get()
+        )
+    }
     viewModel { HomeViewModel(homeUseCase = get(), locationService = get()) }
 }
 

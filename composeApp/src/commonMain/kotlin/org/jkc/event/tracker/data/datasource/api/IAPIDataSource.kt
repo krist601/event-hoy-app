@@ -3,6 +3,7 @@ package org.jkc.event.tracker.data.datasource.api
 import org.jkc.event.tracker.data.entity.response.CategoryResponse
 import org.jkc.event.tracker.data.entity.response.EventListResponse
 import org.jkc.event.tracker.data.entity.response.LocationResponse
+import org.jkc.event.tracker.data.entity.response.SubCategoryResponse
 import org.jkc.event.tracker.domain.entity.EventEntity
 
 interface IAPIDataSource {
@@ -11,6 +12,7 @@ interface IAPIDataSource {
         type: String? = null,
         page: Int? = null,
         category: String? = null,
+        subCategory: String? = null,
         location: String? = null,
         startDate: String? = null,
         endDate: String? = null,
@@ -21,4 +23,5 @@ interface IAPIDataSource {
     suspend fun getEventById(id: Int): EventEntity
     suspend fun getCategoryList(): List<CategoryResponse>
     suspend fun getLocationList(): List<LocationResponse>
+    suspend fun getSubCategoryList(categoryId: String?): List<SubCategoryResponse>
 }

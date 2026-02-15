@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import eventtracker.composeapp.generated.resources.Res
 import eventtracker.composeapp.generated.resources.app_name
@@ -63,9 +64,13 @@ import org.jkc.event.tracker.presentation.ui.eventlist.EventCard
 import org.jkc.event.tracker.presentation.util.uistates.HomeUIState
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.datetime.*
+import org.jkc.event.tracker.domain.entity.CategoryEntity
 import org.jkc.event.tracker.domain.entity.LocationEntity
+import org.jkc.event.tracker.domain.entity.SubCategoryEntity
 import org.jkc.event.tracker.presentation.ui.common.LocationBottomSheet
 import org.jkc.event.tracker.presentation.ui.common.LocationList
+import org.jkc.event.tracker.presentation.ui.common.SubCategoryList
+import org.jkc.event.tracker.presentation.util.BindLocationPermission
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +97,16 @@ fun HomeRoute(
             "${date.dayOfMonth} de $monthName"
         }
     }
+
+    val permissionControl = BindLocationPermission(
+        onGranted = {
+            viewModel.fetchCurrentLocation()
+            showLocationSheet = false
+        },
+        onDenied = {
+            showLocationSheet = false
+        }
+    )
 
     Scaffold(
         modifier = Modifier.background(Color.White),
@@ -150,13 +165,24 @@ fun HomeRoute(
                                 upcomingEventList = currentState.upcomingEventList,
                                 suggestedEventList = currentState.suggestedEventList,
                                 categoryList = currentState.categoryList,
+                                categorySelected = currentState.categorySelected,
+                                subCategories = currentState.subCategoryList,
                                 locationList = currentState.locationList
                             ),
-                            onCategoryEventsClick = onCategoryEventsClick,
+                            onCategoryEventsClick = { category ->
+                                viewModel.resetPages()
+                                viewModel.setCategory(category)
+                                viewModel.fetchEventList()
+                            },
                             onEventClick = onEventClick,
                             onUpcomingEventsClick = onUpcomingEventsClick,
                             onSuggestedEventsClick = onSuggestedEventsClick,
-                            onLoadNewPage = { viewModel.fetchNewPage() }
+                            onLoadNewPage = { viewModel.fetchNewPage() },
+                            onSubCategoryEventsClick = { subCategory ->
+                                viewModel.resetPages()
+                                viewModel.setSubCategory(subCategory)
+                                viewModel.fetchEventList()
+                            }
                         )
                     }
 
@@ -204,9 +230,8 @@ fun HomeRoute(
             locationList = (state as? HomeViewState.Success)?.locationList ?: emptyList(),
             onLocationSelected = { location ->
                 if (location?.id == -1) {
-                     viewModel.fetchCurrentLocation()
-                     showLocationSheet = false
                      selectedLocation = location
+                     permissionControl.launchPermissionRequest()
                 } else {
                     selectedLocation = location
                     viewModel.location = location?.id?.toString()
@@ -348,10 +373,11 @@ fun LateralEventCard(
 @Composable
 fun HomeScreen(
     data: HomeUIState,
-    onCategoryEventsClick: (Int) -> Unit,
+    onCategoryEventsClick: (CategoryEntity) -> Unit,
     onEventClick: (Int) -> Unit,
     onUpcomingEventsClick: () -> Unit,
     onSuggestedEventsClick: () -> Unit,
+    onSubCategoryEventsClick: (SubCategoryEntity) -> Unit,
     onLoadNewPage: () -> Unit
 ) {
     val listState = rememberLazyListState()
@@ -376,7 +402,18 @@ fun HomeScreen(
             item {
                 CategoryList(
                     categoryList = data.categoryList,
-                    onCategoryEventsClick = onCategoryEventsClick
+                    onCategoryEventsClick = { category ->
+                        onCategoryEventsClick.invoke(category)
+                    }
+                )
+            }
+        }
+        if(data.subCategories.isNotEmpty()){
+            item {
+                SubCategoryList(
+                    title = data.categorySelected?.name.orEmpty(),
+                    subCategoryList = data.subCategories,
+                    onCategoryEventsClick = { subCategory -> onSubCategoryEventsClick.invoke(subCategory) }
                 )
             }
         }
