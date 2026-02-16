@@ -47,8 +47,8 @@ class APIDataSource: IAPIDataSource {
         if (!subCategory.isNullOrEmpty()) { params += "subcategoryId=$subCategory" }
         else if (!category.isNullOrEmpty()) { params += "categoryId=$category" }
         if (!location.isNullOrEmpty()) { params += "venueId=$location" }
-        if (!startDate.isNullOrEmpty()) { params += "startDate=${startDate}T00:00:00" }
-        if (!endDate.isNullOrEmpty()) { params += "endDate=${endDate}T00:00:00" }
+        if (!startDate.isNullOrEmpty()) { params += "startDate=${startDate}" }
+        if (!endDate.isNullOrEmpty()) { params += "endDate=${endDate}" }
         if(latitude != null && longitude != null && radius != null){
             params += "latitude=$latitude"
             params += "longitude=$longitude"
