@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Card
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import org.jkc.event.tracker.domain.entity.CategoryEntity
 
 @Composable
@@ -84,13 +87,12 @@ fun CategoryCard(
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.Gray)
         ) {
-            /*AsyncImage(
-            model = category.,
-            contentDescription = title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-        )*/
+            AsyncImage(
+                model = category.imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize(),
+            )
             Box(
                 modifier = Modifier.matchParentSize()
             )
