@@ -84,6 +84,7 @@ class HomeViewModel(
 
                 if(categorySelected != null) {
                     subCategoryList = homeUseCase.getSubCategoryList(categorySelected?.id?.toString())
+                    subCategoryList.forEach { it.isSelected = it.id == subCategorySelected?.id }
                 }
                 val events = homeUseCase.getEventList(
                     text = text.orEmpty(),

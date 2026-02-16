@@ -5,4 +5,5 @@ data class SubCategoryEntity(
     val name: String,
     val categoryId: String?,
     val order: Int,
+    var  isSelected: Boolean = false
 )

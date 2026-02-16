@@ -1,5 +1,6 @@
 package org.jkc.event.tracker.presentation.ui.common
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +34,15 @@ fun SubCategoryList(
     subCategoryList: List<SubCategoryEntity>,
     onCategoryEventsClick: (SubCategoryEntity) -> Unit
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(subCategoryList) {
+        val index = subCategoryList.indexOfFirst { it.isSelected }
+        if (index >= 0) {
+            listState.animateScrollToItem(index)
+        }
+    }
+
     Column(
         modifier = modifier
     ) {
@@ -40,19 +52,14 @@ fun SubCategoryList(
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
         )
         Spacer(modifier = Modifier.height(12.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+        LazyRow(
+            state = listState,
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
             itemsIndexed(subCategoryList) { index, subCategory ->
-                val startPadding = when (index) {
-                    0 -> 8.dp
-                    else -> 4.dp
-                }
-                val endPadding = when (index) {
-                    subCategoryList.lastIndex -> 8.dp
-                    else -> 4.dp
-                }
 
                 SubCategoryCard(
-                    modifier = Modifier.padding(start = startPadding, end = endPadding),
+                    modifier = Modifier.padding(start = 6.dp, end = 6.dp),
                     subCategory = subCategory,
                     onCategoryEventsClick = { onCategoryEventsClick.invoke(subCategory) }
                 )
@@ -68,33 +75,26 @@ fun SubCategoryCard(
     modifier: Modifier = Modifier,
     onCategoryEventsClick: (Int) -> Unit
 ) {
+    val isSelected = subCategory.isSelected
+    val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.White
+    val contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
+    val border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+
     Card(
         modifier = modifier
-            .clickable { onCategoryEventsClick(subCategory.id) }
-            .background(Color.White),
+            .clickable { onCategoryEventsClick(subCategory.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        border = border,
+        shape = RoundedCornerShape(20.dp)
     ) {
         Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.Gray)
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
         ) {
-            /*AsyncImage(
-            model = category.,
-            contentDescription = title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-        )*/
-            Box(
-                modifier = Modifier.matchParentSize()
-            )
             Text(
                 text = subCategory.name,
-                color = Color.White,
+                color = contentColor,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.align(Alignment.BottomStart).padding(12.dp)
             )
         }
     }
