@@ -96,7 +96,7 @@ class HomeViewModel(
                     endDate = endDate?.toString().orEmpty(),
                     latitude = latitude,
                     longitude = longitude,
-                    radius = 5//radius
+                    radius = 15//radius
                 )
                 if(page != 0) memorySuggestedEventList.addAll(events.first)
                 else memorySuggestedEventList = events.first.toMutableList()

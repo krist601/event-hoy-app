@@ -24,7 +24,7 @@ actual class LocationService : ILocationService {
     actual override suspend fun getCurrentLocation(): LocationEntity? {
         // ContextProvider guarantees context availability
 
-        println("Kris si pide localizacion")
+        android.util.Log.d("LocationDebug", "LocationService: getCurrentLocation called")
         
         // Basic permission check
         val hasFine = androidx.core.content.ContextCompat.checkSelfPermission(

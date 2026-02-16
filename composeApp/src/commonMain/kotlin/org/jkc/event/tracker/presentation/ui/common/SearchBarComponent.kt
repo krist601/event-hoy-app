@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun SearchBarComponent(
@@ -56,7 +57,7 @@ fun SearchBarComponent(
                         onClick = onLocationClick,
                         colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
                             containerColor = Color.White,
-                            contentColor = if (selectedLocation != null) Color.Red else Color.Gray
+                            contentColor = if (selectedLocation != null) MaterialTheme.colorScheme.primary else Color.Gray
                         )
                     ) {
                         Icon(
@@ -84,7 +85,7 @@ fun SearchBarComponent(
             Text(
                 text = selectedLocation,
                 style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
-                color = Color.Red,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )
         }

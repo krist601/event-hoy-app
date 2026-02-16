@@ -100,6 +100,7 @@ fun HomeRoute(
 
     val permissionControl = BindLocationPermission(
         onGranted = {
+            println("LocationDebug: HomeScreen - Permission Granted callback")
             viewModel.fetchCurrentLocation()
             showLocationSheet = false
         },
@@ -231,6 +232,7 @@ fun HomeRoute(
             onLocationSelected = { location ->
                 if (location?.id == -1) {
                      selectedLocation = location
+                     println("LocationDebug: HomeScreen - User clicked My Location")
                      permissionControl.launchPermissionRequest()
                 } else {
                     selectedLocation = location

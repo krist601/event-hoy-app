@@ -23,8 +23,10 @@ actual fun BindLocationPermission(
         val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         
         if (fineLocationGranted || coarseLocationGranted) {
+            android.util.Log.d("LocationDebug", "PermissionHandler: Granted by user prompt")
             onGranted()
         } else {
+            android.util.Log.d("LocationDebug", "PermissionHandler: Denied by user prompt")
             onDenied()
         }
     }
@@ -44,8 +46,10 @@ actual fun BindLocationPermission(
                 ) == PackageManager.PERMISSION_GRANTED
                 
                 if (hasFine || hasCoarse) {
+                    android.util.Log.d("LocationDebug", "PermissionHandler: Already granted")
                     onGranted()
                 } else {
+                    android.util.Log.d("LocationDebug", "PermissionHandler: Launching permission request")
                     launcher.launch(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,

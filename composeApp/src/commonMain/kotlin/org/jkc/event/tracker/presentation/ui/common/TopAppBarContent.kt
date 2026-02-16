@@ -63,7 +63,7 @@ fun CustomTopAppBar(
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
                         contentDescription = "Calendar",
-                        tint = if(hasDateSelected) Color.Red else Color.Black
+                        tint = if(hasDateSelected) MaterialTheme.colorScheme.primary else Color.Black
                     )
                 }
             }
